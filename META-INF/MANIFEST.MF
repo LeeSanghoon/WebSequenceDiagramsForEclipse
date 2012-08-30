@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Web Sequence Diagrams
+Bundle-SymbolicName: kr.pe.silent.websequencediagrams; singleton:=true
+Bundle-Version: 1.0.1.qualifier
+Bundle-Activator: kr.pe.silent.websequencediagrams.Activator
+Bundle-Vendor: Sanghoon Lee
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.ui.ide,
+ org.eclipse.ui.editors,
+ org.eclipse.core.resources,
+ org.eclipse.core.runtime,
+ org.eclipse.jface.text
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
