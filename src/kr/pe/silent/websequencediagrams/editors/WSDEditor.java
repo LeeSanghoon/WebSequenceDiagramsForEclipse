@@ -29,9 +29,9 @@ public class WSDEditor extends TextEditor {
 	private Label lblImage;
 
 	private String skin;
-	
+
 	private boolean imageUpdating = false;
-	
+
 	@Override
 	public void createPartControl(Composite parent) {
 		SashForm form = new SashForm(parent, SWT.HORIZONTAL);
@@ -41,14 +41,15 @@ public class WSDEditor extends TextEditor {
 
 		// right
 		Composite right = new Composite(form, SWT.NONE);
-		right.setBackground(getSite().getShell().getDisplay().getSystemColor(SWT.COLOR_WHITE));
+		right.setBackground(getSite().getShell().getDisplay()
+				.getSystemColor(SWT.COLOR_WHITE));
 		GridLayout layout = new GridLayout(1, true);
 		layout.marginHeight = 0;
 		layout.marginWidth = 0;
 		layout.verticalSpacing = 0;
 		layout.horizontalSpacing = 0;
 		right.setLayout(layout);
-		
+
 		cmbSkin = new Combo(right, SWT.FLAT | SWT.READ_ONLY);
 		cmbSkin.setItems(WSDUtil.skinLabels);
 		cmbSkin.setText(WSDUtil.DEFAULT_SKIN);
@@ -60,42 +61,43 @@ public class WSDEditor extends TextEditor {
 				updateImage();
 			}
 		});
-		
+
 		sc = new ScrolledComposite(right, SWT.H_SCROLL | SWT.V_SCROLL);
 		sc.setExpandHorizontal(true);
 		sc.setExpandVertical(true);
 		sc.setLayoutData(new GridData(GridData.FILL_BOTH));
-		
+
 		lblImage = new Label(sc, SWT.NONE);
-		lblImage.setBackground(getSite().getShell().getDisplay().getSystemColor(SWT.COLOR_WHITE));
+		lblImage.setBackground(getSite().getShell().getDisplay()
+				.getSystemColor(SWT.COLOR_WHITE));
 		sc.setContent(lblImage);
 		sc.addControlListener(new ControlAdapter() {
 			public void controlResized(ControlEvent e) {
 				sc.setMinSize(lblImage.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 			}
 		});
-		
-		form.setWeights(new int[] {2, 3});
-		
-		
+
+		form.setWeights(new int[] { 2, 3 });
+
 		// listener
-		getSourceViewer().getTextWidget().addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				updateImage();
-			}
-		});
-		
+		getSourceViewer().getTextWidget().addModifyListener(
+				new ModifyListener() {
+					@Override
+					public void modifyText(ModifyEvent e) {
+						updateImage();
+					}
+				});
+
 		skin = WSDUtil.skins[cmbSkin.getSelectionIndex()];
 		updateImage();
 	}
-	
+
 	@Override
 	public void doSave(IProgressMonitor progressMonitor) {
 		updateImage();
 		super.doSave(progressMonitor);
 	}
-	
+
 	@Override
 	public void doSaveAs() {
 		updateImage();
@@ -106,35 +108,45 @@ public class WSDEditor extends TextEditor {
 		if (imageUpdating) {
 			return;
 		}
-		
+
 		imageUpdating = true;
 
 		final String text = getSourceViewer().getTextWidget().getText();
-		final String outFile = ((FileEditorInput)getEditorInput()).getPath().removeFileExtension() + ".png";
+		final String outFile = ((FileEditorInput) getEditorInput()).getPath()
+				.removeFileExtension() + ".png";
 		final String style = skin;
 
 		new Thread() {
 			public void run() {
-				WSDUtil.getSequenceDiagram(text, outFile, style);
-				
-				getEditorSite().getShell().getDisplay().asyncExec(new Runnable() {
-					public void run() {
-						if (lblImage.getImage() != null)
-							lblImage.getImage().dispose();
-						lblImage.setImage(new Image(null, outFile));
-						
-						sc.setMinSize(lblImage.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-						
-						imageUpdating = false;
-						
-						try {
-							((IFileEditorInput) getEditorInput()).getFile().getProject().refreshLocal(IResource.DEPTH_INFINITE, null);
-						} catch (CoreException e1) {
-						}
-					}
-				});
+				WSDUtil wsdUtil = new WSDUtil();
+				wsdUtil.getSequenceDiagram(text, outFile, style);
+				wsdUtil.dispose();
+
+				getEditorSite().getShell().getDisplay()
+						.asyncExec(new Runnable() {
+							public void run() {
+								if (lblImage.getImage() != null)
+									lblImage.getImage().dispose();
+								lblImage.setImage(new Image(null, outFile));
+
+								sc.setMinSize(lblImage.computeSize(SWT.DEFAULT,
+										SWT.DEFAULT));
+
+								imageUpdating = false;
+
+								try {
+									((IFileEditorInput) getEditorInput())
+											.getFile()
+											.getProject()
+											.refreshLocal(
+													IResource.DEPTH_INFINITE,
+													null);
+								} catch (CoreException e1) {
+								}
+							}
+						});
 			};
 		}.start();
 	}
-	
+
 }
