@@ -8,6 +8,10 @@ Eclipse plug-in for [www.websequencediagrams.com](www.websequencediagrams.com)
 
 can edit file with **.wsd** extension. (It contain plain text like .txt file.)
 
+# Download
+
+https://code.google.com/p/ewsd/downloads
+
 # Install & Run
 
 1. Download plug-in file.
